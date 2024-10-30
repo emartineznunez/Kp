@@ -11,8 +11,8 @@ real(dp) :: t,tmax,tprint,tint,a0,r2a0,suma,vol,avog,conv,kc,kp,R,temp,alpha,pre
 real(dp) :: rnd(2)
 integer,dimension(:),allocatable :: re1,re2,pr1,pr2,n,p,p0
 real (dp) ,dimension(:),allocatable :: a,rate,c0,c0read,cont
-avog=6.022d23
-R=0.08205
+avog=6.0221408d23
+R=0.0831447
 read(*,"(a80)") title
 print "(t3,a80)",title
 print "(t3,a,/)","+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+"
@@ -81,7 +81,7 @@ big: do inran=1,nran
         enddo
         write(7,*) tprint,",",p(1),",",p(2)
         print "(t3,a)","EQUILIBRIUM PROPERTIES"
-        print "(t3,a)","    Kc        Kp         alpha   p(atm)  alpha(eq)"
+        print "(t3,a)","    Kc        Kp         alpha   p(bar)  alpha(eq)"
         kc=real(p(2),dp)*real(p(2),dp)/real(p(1),dp)/vol
         kp=kc/avog*R*temp*1e3
         alpha=(real(p0(1),dp)-real(p(1),dp))/real(p0(1),dp)
