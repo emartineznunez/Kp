@@ -38,7 +38,7 @@ do i=1,m
    if(re1(i)==re2(i)) rate(i)=2*rate(i)
 enddo
 print*, ""
-print "(t3,a)","Species C0(M)       molecules     moles"
+print "(t3,a)","Species     C0(M)       molecules         moles"
 do ijk=1,m
    cont(ijk)=0
 enddo
@@ -46,8 +46,11 @@ do i=1,nesp
    read(*,*) c0read(i)
    c0(i)=c0read(i)*1e-3
    p0(i)=int(c0(i)*conv+0.5)
-   print "(t3,i4,1p,e10.2,i15,1p,e10.2)",i,c0read(i),p0(i),p0(i)/avog
+   print "(t3,i4,1p,e14.4,i15,1p,e14.4)",i,c0read(i),p0(i),p0(i)/avog
 enddo
+print "(t3,'Temperature =',f10.2,' K')",temp
+print "(t3,'Init Press. =',f10.2,' bar')",c0read(1)*R*temp
+
 read(*,*) tmax,tint
 ia=1
 iz=nesp
