@@ -87,7 +87,7 @@ big: do inran=1,nran
         alpha=(real(p0(1),dp)-real(p(1),dp))/real(p0(1),dp)
         pressure=(real(p(1),dp)+real(p(2),dp))/avog*R*temp/voll
         alpha_eq=(kp/(kp+4*pressure))**0.5
-        if(p(1)>0) print "(t3,(1p,e10.2),(1p,e10.2),e10.1,e10.3,e10.1)",kc,kp,alpha,pressure,alpha_eq
+        if(p(1)>0) print "(t3,(1p,e10.4),(1p,e10.4),e10.4,e10.4,e10.4)",kc,kp,alpha,pressure,alpha_eq
         print*, ""
         if(p(1)>0) write(8,*) tprint,",",a(1),",",a(2)
         tprint=tprint+tint
