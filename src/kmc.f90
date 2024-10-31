@@ -7,24 +7,35 @@ implicit none
 character*80 :: title
 integer, parameter :: dp = selected_real_kind(15,307)
 integer :: m,nran,nr,nesp,inran,i,j,k,l,mu,pd,kk,ia,iz,ijk
-real(dp) :: t,tmax,tprint,tint,a0,r2a0,suma,vol,avog,conv,kc,kp,R,temp,alpha,pressure,voll,alpha_eq
+real(dp) :: t,tmax,tprint,tint,a0,r2a0,suma,vol,avog,conv,kc,kp,R,temp,alpha,pressure
+real(dp) :: voll,alpha_eq,G_star,G_mix,nmol,x,G,Rkj,helm
 real(dp) :: rnd(2)
-integer,dimension(:),allocatable :: re1,re2,pr1,pr2,n,p,p0
-real (dp) ,dimension(:),allocatable :: a,rate,c0,c0read,cont
+integer,dimension(:),allocatable :: re1,re2,pr1,pr2,n,p,p0,ni0,nui
+real (dp) ,dimension(:),allocatable :: a,rate,c0,c0read,cont,mui0,xia,muistar
 avog=6.0221408d23
 R=0.0831447
+Rkj=8.31447e-3
 read(*,"(a80)") title
 print "(t3,a80)",title
 print "(t3,a,/)","+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+"
 nran=1
 read(*,*) m,nesp,temp
-allocate(re1(m),re2(m),pr1(m),pr2(m),a(m),rate(m),p0(nesp),p(nesp),n(nesp),c0(nesp),c0read(nesp),cont(m))
+allocate(re1(m),re2(m),pr1(m),pr2(m),a(m),rate(m),p0(nesp),p(nesp),n(nesp),c0(nesp),c0read(nesp),cont(m),ni0(2),mui0(2))
+allocate(nui(2),xia(2),muistar(2))
 n=(/ (l,l=1,nesp) /)
 ! The vol relates to population of species i p_i and concentration c_i as: vol=p_i/c_i/avog
 ! So, choose vol for a expected population of a given species i (p_i)
 ! vol  is volume in cm^3
 ! voll is volume in L
 ! conc is read in mol/L but in the code is in mol/cm^3
+!Specific of N2O4-->2NO2 rxn
+ni0(1)=1
+ni0(2)=0
+mui0(1)=0
+mui0(2)=2.37
+nui(1)=-1
+nui(2)=2
+!!!!
 read(*,*) vol
 voll=vol*1e-3
 print "(t3,a,1p,e10.2,a,1p,e10.2,a,1p,e10.2,a)","Nanovessel of:",vol," cm^3",voll," L",vol*1e21," nm^3"
@@ -84,13 +95,22 @@ big: do inran=1,nran
         enddo
         write(7,*) tprint,",",p(1),",",p(2)
         print "(t3,a)","EQUILIBRIUM PROPERTIES"
-        print "(t3,a)","      Kc          Kp           alpha     p(bar)    alpha(eq)"
+        print "(t3,a)","      Kc          Kp           alpha     p(bar)    alpha(eq)   A/RT(mol)"
         kc=real(p(2),dp)*real(p(2),dp)/real(p(1),dp)/vol
         kp=kc/avog*R*temp*1e3
         alpha=(real(p0(1),dp)-real(p(1),dp))/real(p0(1),dp)
         pressure=(real(p(1),dp)+real(p(2),dp))/avog*R*temp/voll
         alpha_eq=(kp/(kp+4*pressure))**0.5
-        if(p(1)>0) print "(t3,(1p,e12.4),(1p,e12.4),e12.4,e12.4,e12.4)",kc,kp,alpha,pressure,alpha_eq
+        muistar(1) = mui0(1) + Rkj * temp * log(pressure)
+        muistar(2) = mui0(2) + Rkj * temp * log(pressure)
+        G_star= 1 / Rkj / temp *  (sum(ni0*muistar) + alpha * sum(nui*muistar) )
+        nmol = sum(ni0) + sum(nui) * alpha 
+        xia(1) = 1.d0/nmol * (ni0(1) + alpha * nui(1))
+        xia(2) = 1.d0/nmol * (ni0(2) + alpha * nui(2))
+        G_mix=nmol*sum(xia*log(xia))
+        if(alpha==0) G_mix = 0
+        helm = G_star + G_mix - nmol
+        if(p(1)>0) print "(t3,(1p,e12.4),(1p,e12.4),e12.4,e12.4,e12.4,e12.4)",kc,kp,alpha,pressure,alpha_eq,helm
         print*, ""
         if(p(1)>0) write(8,*) tprint,",",a(1),",",a(2)
         tprint=tprint+tint
