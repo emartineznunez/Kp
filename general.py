@@ -957,7 +957,7 @@ def plot_DGo_T_statmech(T,DGo_T,DGo_model,DCP,TREF,DGo_ref,key):
     # Format plot
     plt.xticks(fontsize=14)
     plt.yticks(fontsize=14)
-    plt.ylimit(top=25)
+    plt.ylimit(-15,25)
 
     plt.xlabel(r'$T \;\; (\mathrm{K})$'                        ,fontsize=16)
     plt.ylabel(r'$\Delta_{r} G^{\circ} \;\; (\mathrm{kJ/mol})$',fontsize=16)
